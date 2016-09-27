@@ -31,15 +31,16 @@ echo "FROM php:7.0-apache" >> Dockerfile
 echo "COPY /var/www/html/ /var/www/html/" >> Dockerfile
 docker build -t php-deploy:Mengo-apache .
 cd ..
+git clone https://github.com/Lemengo/crossoverAssesment.git  && cd crossoverAssesment && docker build -t crossoverAssesment/local:apache .
 
 docker run -p 3700:3306 --name Mengo-mysql -e MYSQL_ROOT_PASSWORD=Lemengo12345 -d mysql:latest
-docker run -dit -p 90:80 --name Mengo-apache --link Mengo-mysql:mysql -v /var/www/html/:/var/www/html php:7.0-apache
+docker run -dit -p 90:80 --name Mengo-apache --link Mengo-mysql:mysql -v /var/www/html/:/var/www/html crossoverAssesment/local:apache
 
 #Backup directory
 mkdir backups 
 
 cp db.php index.php logout.php /var/www/html/
-cp cronlogs.sh /root && chmod +x /root/cronlogs.sh
+cp dynamicronlog.sh /root && chmod +x /root/dynamicronlog.sh
 cp backup.sh /root && chmod +x /root/backup.sh
 echo '* 19 * * * /root/cronlogs.sh' | crontab -
 echo '* 19 * * * /root/backup.sh' | crontab -
